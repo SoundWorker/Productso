@@ -1,7 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dmitriy
- * Date: 19.03.16
- * Time: 18:05
- */
+Route::group(['middleware' => ['web'],'namespace' => 'SoundWorker\Productso\Http\Controllers'], function () {
+    Route::get('category/{slug?}', 'PrsoCategoryController@show');
+});
