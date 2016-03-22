@@ -50,4 +50,9 @@
         <li class="ibl">-><a href="{{URL::to('/category/'.$descend->slug)}}">{{$descend->name}}</a></li>
     @endforeach
     <li class="ibl">->{{$node->name}}</li>
+
+    <h1>Вывод изображений категории</h1>
+    @foreach($node->attaches as $attach)
+        <img src="{{URL::to($attach->filename)}}" alt="{{$attach->alt}}" title="{{$attach->title}}">
+    @endforeach
 @endif
