@@ -1,4 +1,5 @@
 <?php
-Route::group(['middleware' => ['web'],'namespace' => 'SoundWorker\Productso\Http\Controllers'], function () {
-    Route::get('category/{slug?}', 'PrsoCategoryController@show');
+Route::group(['middleware' => ['web']], function () {
+    Route::get('category/{slug?}', 'SoundWorker\Productso\Http\Controllers\PrsoCategoryController@show');
+    Route::get('product/{slug}/{categoryid?}', 'SoundWorker\Productso\Http\Controllers\PrsoProductController@show');
 });

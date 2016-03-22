@@ -2,23 +2,15 @@
 
 namespace SoundWorker\Productso\Models;
 
-use Kalnoy\Nestedset\Node;
+use Illuminate\Database\Eloquent\Model;
 use Angrydeer\Attachfiles\AttachableTrait;
 use Angrydeer\Attachfiles\AttachableInterface;
 use Request;
 use Sentinel;
 
-
-
-
-class PrsoCategory extends Node implements AttachableInterface
+class PrsoProduct extends Model implements AttachableInterface
 {
     use AttachableTrait;
-
-
-
-    public static $productPerPage = 30;
-
 
     /**
      * The attributes that are mass assignable.
@@ -26,12 +18,13 @@ class PrsoCategory extends Node implements AttachableInterface
      * @var array
      */
     protected $fillable = [
-        'name', 'slug', '_lft', '_rgt', 'parent_id', 'note', 'desc', 'showtop', 'showside', 'showbottom', 'showcontent',
+        'name', 'slug', 'category_id', 'cost',  'note', 'description', 'status', 'artikul', 'views', 'show', 'complected', 'complect_id'
     ];
 
 
     public function setSlugAttribute($slug)
     {
+
         if($slug=='') $slug = str_slug(Request::get('name'));
         if($cat= self::where('slug',$slug)->first()){
             $idmax=self::max('id')+1;
@@ -67,15 +60,6 @@ class PrsoCategory extends Node implements AttachableInterface
             $this->updateOrNewAttach($image, $imgtitles[$i], $imgalts[$i], $imgdescs[$i]);
             $i++;
         }
-
-        /*
-        * Очистка мусора за собой.  Функция updateOrNewAttach за собой приберает, но  могут оставаться картинки, которые не были поданы в сохранение
-        *(редактировали категорию, перебрали кучу картинок, в конце концов отменили
-        * сохранениe)
-        * Для этого и нужен id админа, чтобы чистил за собой а не общую папку аплоадс
-        * может в этот момент еще кто-то что-то правит.
-        */
-
         $path = config('admin.imagesUploadDirectory').'/'.Sentinel::check()->id;
         $files = glob(public_path($path)."/*");
         if (count($files) > 0) {
@@ -85,14 +69,31 @@ class PrsoCategory extends Node implements AttachableInterface
                 }
             }
         }
-
-
         $this->keepOnly($images);
     }
 
-
-    public function products()
+    public function categories()
     {
-        return $this->belongsToMany('SoundWorker\Productso\Models\PrsoProduct');
+        return $this->belongsToMany('SoundWorker\Productso\Models\PrsoCategory');
     }
+
+    public function parentCategories()
+    {
+        return $this->belongsToMany('SoundWorker\Productso\Models\PrsoCategory');
+    }
+
+    public function setCategoriesAttribute($categories)
+    {
+        // перепрописываем отношения с таблицей категорий
+        $this->categories()->detach();
+        if ( ! $categories) return;
+        if ( ! $this->exists) $this->save();
+        $this->categories()->attach($categories);
+    }
+
+    public function getCategoriesAttribute($categories)
+    {
+        return array_pluck($this->categories()->get()->toArray(), 'id');
+    }
+
 }

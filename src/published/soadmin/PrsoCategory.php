@@ -18,6 +18,8 @@ Admin::model(SoundWorker\Productso\Models\PrsoCategory::class)->title('Кате�
 		FormItem::checkbox('showcontent', 'В спсике категорий')->defaultValue(true),
 		FormItem::ckeditor('note', 'Аннотация'),
 		FormItem::ckeditor('desc', 'Описание'),
+		//Formitem::images('photos','Фотки'),
+		FormItem::multiimages('photos', 'Изображения'),
 	]);
 	return $form;
 });
